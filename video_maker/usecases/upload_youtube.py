@@ -16,7 +16,7 @@ from video_maker.entities.match_data import MatchData
 class UploadYoutube:
     def __init__(self, match_data: MatchData, video_file_name: str) -> None:
         self.__thumb_file = r'C:\youtube\lol\thumb\thumb.png'
-        self.__file = fr'C:\Users\Joao\Videos\{video_file_name}'
+        self.__file = fr'C:\youtube\Joao\Videos\{video_file_name}'
         self.__title = (
             f"{match_data['mvp']['champion']} {match_data['player_role']} vs {match_data['loser']} - {match_data['region']} {match_data['mvp']['rank']} Patch {match_data['patch']}")
         self.__description = f"""

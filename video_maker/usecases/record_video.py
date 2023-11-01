@@ -8,7 +8,7 @@ from entities.match_data import MatchData
 
 class RecordVideo:
     def __init__(self, match_data: MatchData) -> None:
-        self.__video_file_dir = r'C:\Users\Joao\Videos'
+        self.__video_file_dir = r'C:\youtube\Joao\Videos'
         self.__replay_file_dir = r'C:\youtube\lol\replays'
         self.__match_data = match_data
 

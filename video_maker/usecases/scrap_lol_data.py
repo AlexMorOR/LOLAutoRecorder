@@ -29,9 +29,17 @@ class ScrapLolData(DataScrapper):
     def get_match_data_and_download_replay(self) -> None:
         print('Acessando site e salvando informações...')
         self.driver.get(self.__url)
-        table = self.driver.find_element(
-            by=By.XPATH, value=self.__match_table_selector)
-        text_list = table.text.split('\n')
+        table = self.driver.find_element(by=By.XPATH, value=self.__match_table_selector)
+        
+        # Identify and extract text inside <a> tags with class 'subname' from the context of the table
+        subname_texts = [e.text for e in self.driver.find_elements(by=By.XPATH, value=f'{self.__match_table_selector}//a[contains(concat(" ", @class, " "), concat( " ", "subname", " " ))]')]
+        
+        # Removing subname texts from table's text
+        table_text = table.text
+        for subname_text in subname_texts:
+            table_text = table_text.replace(subname_text + '\n', '')
+        
+        text_list = table_text.split('\n')
         self.match_data['team1']['result'] = text_list[0].split(' ')[0]
         self.match_data['team2']['result'] = text_list[0].split(' ')[-1]
         duration = text_list[0].split(' ')[3][1:-1]

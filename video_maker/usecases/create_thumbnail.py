@@ -32,7 +32,13 @@ class CreateThumbnail:
         print('Thumbnail criada!')
         self.scrapper.driver.quit()
 
-    def __create_html(self, kda: str, mvp: str, vs: str, region: str, patch: str, imgUrl: str):
+    def __create_html(self, 
+                      k:str, d:str, a:str ,
+                      heroName: str, enemyName: str, heroSkin: str,
+                      sumSpell1:str, sumSpell2:str,
+                      item1:str, item2:str, item3:str, item4:str, item5:str, item6:str,
+                      position:str,
+                      region: str, patch: str):
         HTML = """
 <!DOCTYPE html>
 <html>
@@ -40,15 +46,48 @@ class CreateThumbnail:
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;800&display=swap" rel="stylesheet">
+    <link data-react-helmet="true" rel="stylesheet" href="https://lolstatic-a.akamaihd.net/webfonts/live/css/fonts/beaufortforlol.css">
     <style>
         * {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
-        font-family: 'Nanum Gothic', sans-serif;
+        font-family: "Beaufort for LOL";
+        }
+        .back{
+            background-image: url('https://ddragon.leagueoflegends.com/cdn/img/champion/splash/"""+ heroName +"""_"""+ heroSkin +""".jpg');
+        }
+        .p1{
+            background-image: url('http://ddragon.leagueoflegends.com/cdn/13.21.1/img/champion/"""+ heroName +""".png');
+        }
+        .p2{
+            background-image: url('http://ddragon.leagueoflegends.com/cdn/13.21.1/img/champion/"""+ enemyName +""".png');
+        }
+        .ss1{
+            background-image: url('https://ddragon.leagueoflegends.com/cdn/13.21.1/img/spell/"""+ sumSpell1 +""".png');
+        }
+        .ss2{
+            background-image: url('https://ddragon.leagueoflegends.com/cdn/13.21.1/img/spell/"""+ sumSpell2 +""".png');
+        }
+        .item1{
+            background-image: url('https://ddragon.leagueoflegends.com/cdn/13.21.1/img/item/"""+ item1 +""".png');
+        }
+        .item2{
+            background-image: url('https://ddragon.leagueoflegends.com/cdn/13.21.1/img/item/"""+ item2 +""".png');
+        }
+        .item3{
+            background-image: url('https://ddragon.leagueoflegends.com/cdn/13.21.1/img/item/"""+ item3 +""".png');
+        }
+        .item4{
+            background-image: url('https://ddragon.leagueoflegends.com/cdn/13.21.1/img/item/"""+ item4 +""".png');
+        }
+        .item5{
+            background-image: url('https://ddragon.leagueoflegends.com/cdn/13.21.1/img/item/"""+ item5 +""".png');
+        }
+        .item6{
+            background-image: url('https://ddragon.leagueoflegends.com/cdn/13.21.1/img/item/"""+ item6 +""".png');
         }
         .container {
-        background-image: url('""" + imgUrl + """');
         background-size: cover;
         width: 1280px;
         height: 720px;
@@ -59,20 +98,13 @@ class CreateThumbnail:
         width: 500px;
         height: 600px;
         margin-left: 50px;
-        background-color: rgba(100, 100, 100, .4);
-        filter: drop-shadow(0px 20px 10px rgba(0, 0, 0, 0.3));
+        background: linear-gradient(#000000c8, #0000001e);
         display: flex;
         flex-direction: column;
         align-items: center;
-        justify-content: space-between;
+        justify-content: space-around;
         font-weight: 800;
-        }
-        .kda {
-        margin-top: 2rem;
-        color: yellow;
-        font-size: 6rem;
-        display: flex;
-        justify-content: center;
+        border-radius: 60px;
         }
         .match {
         display: flex;
@@ -83,9 +115,11 @@ class CreateThumbnail:
         }
         .mvp {
         font-size: 5rem;
+        text-transform: uppercase;
         }
-        .vs {
+        .role {
         font-size: 2rem;
+        text-transform: uppercase;
         }
         .region {
         background-color: aquamarine;
@@ -94,29 +128,97 @@ class CreateThumbnail:
         border-radius: 2rem;
         font-size: 2rem;
         }
-        .patch {
-        color: white;
-        font-size: 1.5rem;
-        margin-bottom: 2rem;
+        .vs{
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-around;
+        font-size: 60px;
+        color: #F0E6D2;
+        width: 80%;
+        }
+        .items{
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 60px;
+        color: #F0E6D2;
+        width: 90%;
+        }
+        .items .item{
+            width: 50px;
+            height: 50px;
+            background-size: 50px;
+        }
+        .items .summoner{
+            width: 50px;
+            height: 50px;
+            background-size: 50px;
+            border-radius: 50%;
+        }
+        .kda {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-around;
+        font-size: 60px;
+        color: #F0E6D2;
+        width: 50%;
+        }
+        .kda .stat{
+            width: 70px;
+            height: 70px;
+            background-size: 50px;
+            border-radius: 50%;
+            border: 1px solid #F0E6D2;
+            font-size: 45px;
+            background-color: #000000AA;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+        .heroe-icon{
+            border-radius: 50%; 
+            height: 100px;
+            width: 100px;
+            background-size: 110px;
+            background-position: center;
         }
     </style>
-    </head>""" + f"""
+    </head>
 <body>
-    <div class="container">
+    <div class="container back">
     <div class="frame">
-        <div class="kda">
-        <p>{kda}</p>
+        <div class="vs">
+            <div class="heroe-icon p1"></div>
+            <div>
+            <p>VS</p>
+            </div>
+            <div class="heroe-icon p2"></div>
         </div>
         <div class="match">
-        <p class="mvp">{mvp}</p>
-        <p class="vs">vs</p>
-        <p>{vs}</p>
+        <p class="mvp">"""+ heroName +"""</p>
+        <p class="role">"""+ position +"""</p>
+        </div>
+        <div class="items">
+            <div class="summoner ss1"></div>
+            <div class="summoner ss2"></div>
+            <div class="item item1"></div>
+            <div class="item item2"></div>
+            <div class="item item3"></div>
+            <div class="item item4"></div>
+            <div class="item item5"></div>
+            <div class="item item6"></div>
+        </div>
+        <div class="kda">
+            <div class="stat">"""+ k +"""</div>
+            <div class="stat">"""+ d +"""</div>
+            <div class="stat">"""+ a +"""</div>
         </div>
         <div class="region">
-        <p>{region}</p>
-        </div>
-        <div class="patch">
-        <p>Patch {patch}</p>
+        <p>KR</p>
         </div>
     </div>
     </div>
