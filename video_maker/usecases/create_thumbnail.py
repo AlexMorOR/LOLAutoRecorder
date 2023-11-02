@@ -12,17 +12,20 @@ class CreateThumbnail:
 
     def create_thumbnail(self):
         print('Criando thumbnail...')
-        champion = self.lol_data['mvp']['champion'].replace(
-            "'", "").capitalize()
-        champion = self.lol_data['mvp']['champion'].replace(
-            " ", "")
+        champion = self.__get_api_name(self.lol_data['mvp']['champion'])
+        enemy = self.__get_api_name(self.lol_data['loser'])
+        items = [self.__make_48_sprite(item) for item in self.lol_data['mvp']['items']]
+        rune = self.__make_48_sprite(self.lol_data['mvp']['rune'])
+        sumSpell1 = self.__make_48_sprite(self.lol_data['mvp']['spells'][0])
+        sumSpell2 = self.__make_48_sprite(self.lol_data['mvp']['spells'][1])
         self.__create_html(
-            kda=self.lol_data['mvp']['kda'],
-            imgUrl=f'https://ddragon.leagueoflegends.com/cdn/img/champion/splash/{champion}_0.jpg',
-            mvp=self.lol_data['mvp']['champion'],
-            vs=self.lol_data['loser'],
-            region=self.lol_data['region'],
-            patch=self.lol_data['patch']
+            k=self.lol_data['mvp']['k'], d=self.lol_data['mvp']['d'], a=self.lol_data['mvp']['a'],
+            heroAPIName=champion, enemyAPIName=enemy,
+            heroName=self.lol_data['mvp']['champion'], enemyName=self.lol_data['loser'], heroSkin="0",
+            sumSpell1=sumSpell1, sumSpell2=sumSpell2,
+            items=items, rune=rune,
+            position=self.lol_data['mvp']['role'],
+            region=self.lol_data['region'], patch=self.lol_data['patch']
         )
         html_path = os.path.abspath('assets/thumbnail.html')
         self.scrapper.driver.get('file://' + html_path)
@@ -32,14 +35,43 @@ class CreateThumbnail:
         print('Thumbnail criada!')
         self.scrapper.driver.quit()
 
+    def __make_48_sprite(self,
+                         orig:str) -> str:
+        parts = orig.split("-")
+        parts[2] = "48"
+        return f'{parts[0]}-{parts[1]}-{parts[2]}'
+    
+    def __get_api_name(self, name:str) -> str:
+        premadeWords = {
+            "K'Sante": "KSante",
+            "Kai'Sa": "Kaisa",
+            "LeBlanc": "Leblanc",
+            "Wukong": "MonkeyKing"
+        }
+        api_name = ""
+        if name in premadeWords:
+            api_name = premadeWords[name]
+        else:
+            champion = name.replace(
+                "'", "").lower().capitalize()
+            champion = champion.replace(
+                " ", "")
+            api_name = champion
+        return api_name
+
     def __create_html(self, 
                       k:str, d:str, a:str ,
+                      heroAPIName:str, enemyAPIName:str,
                       heroName: str, enemyName: str, heroSkin: str,
                       sumSpell1:str, sumSpell2:str,
-                      item1:str, item2:str, item3:str, item4:str, item5:str, item6:str,
+                      items:list[str], rune:str,
                       position:str,
                       region: str, patch: str):
+        ITEMS_HTML = ''
+        for item in items:
+            ITEMS_HTML += f'<div class="item {item}"></div>'
         HTML = """
+
 <!DOCTYPE html>
 <html>
     <head>
@@ -47,6 +79,7 @@ class CreateThumbnail:
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;800&display=swap" rel="stylesheet">
     <link data-react-helmet="true" rel="stylesheet" href="https://lolstatic-a.akamaihd.net/webfonts/live/css/fonts/beaufortforlol.css">
+    <link rel="stylesheet" type="text/css" href="https://lolg-cdn.porofessor.gg/style.sprite.css?v=a917983e5f0d4c8bd0ef5aad89b31565">
     <style>
         * {
         margin: 0;
@@ -55,37 +88,13 @@ class CreateThumbnail:
         font-family: "Beaufort for LOL";
         }
         .back{
-            background-image: url('https://ddragon.leagueoflegends.com/cdn/img/champion/splash/"""+ heroName +"""_"""+ heroSkin +""".jpg');
+            background-image: url('https://ddragon.leagueoflegends.com/cdn/img/champion/splash/"""+ heroAPIName +"""_"""+ heroSkin +""".jpg');
         }
         .p1{
-            background-image: url('http://ddragon.leagueoflegends.com/cdn/13.21.1/img/champion/"""+ heroName +""".png');
+            background-image: url('http://ddragon.leagueoflegends.com/cdn/13.21.1/img/champion/"""+ heroAPIName +""".png');
         }
         .p2{
-            background-image: url('http://ddragon.leagueoflegends.com/cdn/13.21.1/img/champion/"""+ enemyName +""".png');
-        }
-        .ss1{
-            background-image: url('https://ddragon.leagueoflegends.com/cdn/13.21.1/img/spell/"""+ sumSpell1 +""".png');
-        }
-        .ss2{
-            background-image: url('https://ddragon.leagueoflegends.com/cdn/13.21.1/img/spell/"""+ sumSpell2 +""".png');
-        }
-        .item1{
-            background-image: url('https://ddragon.leagueoflegends.com/cdn/13.21.1/img/item/"""+ item1 +""".png');
-        }
-        .item2{
-            background-image: url('https://ddragon.leagueoflegends.com/cdn/13.21.1/img/item/"""+ item2 +""".png');
-        }
-        .item3{
-            background-image: url('https://ddragon.leagueoflegends.com/cdn/13.21.1/img/item/"""+ item3 +""".png');
-        }
-        .item4{
-            background-image: url('https://ddragon.leagueoflegends.com/cdn/13.21.1/img/item/"""+ item4 +""".png');
-        }
-        .item5{
-            background-image: url('https://ddragon.leagueoflegends.com/cdn/13.21.1/img/item/"""+ item5 +""".png');
-        }
-        .item6{
-            background-image: url('https://ddragon.leagueoflegends.com/cdn/13.21.1/img/item/"""+ item6 +""".png');
+            background-image: url('http://ddragon.leagueoflegends.com/cdn/13.21.1/img/champion/"""+ enemyAPIName +""".png');
         }
         .container {
         background-size: cover;
@@ -147,14 +156,8 @@ class CreateThumbnail:
         width: 90%;
         }
         .items .item{
-            width: 50px;
-            height: 50px;
-            background-size: 50px;
         }
         .items .summoner{
-            width: 50px;
-            height: 50px;
-            background-size: 50px;
             border-radius: 50%;
         }
         .kda {
@@ -186,6 +189,9 @@ class CreateThumbnail:
             background-size: 110px;
             background-position: center;
         }
+        .rune{
+            transform: scale(2);
+        }
     </style>
     </head>
 <body>
@@ -198,19 +204,15 @@ class CreateThumbnail:
             </div>
             <div class="heroe-icon p2"></div>
         </div>
+        <div class="rune """+ rune +""""></div>
         <div class="match">
         <p class="mvp">"""+ heroName +"""</p>
         <p class="role">"""+ position +"""</p>
         </div>
         <div class="items">
-            <div class="summoner ss1"></div>
-            <div class="summoner ss2"></div>
-            <div class="item item1"></div>
-            <div class="item item2"></div>
-            <div class="item item3"></div>
-            <div class="item item4"></div>
-            <div class="item item5"></div>
-            <div class="item item6"></div>
+            <div class="summoner """+ sumSpell1 +""""></div>
+            <div class="summoner """+ sumSpell2 +""""></div>
+            """+ ITEMS_HTML +"""
         </div>
         <div class="kda">
             <div class="stat">"""+ k +"""</div>
@@ -218,7 +220,7 @@ class CreateThumbnail:
             <div class="stat">"""+ a +"""</div>
         </div>
         <div class="region">
-        <p>KR</p>
+        <p>"""+ region +"""</p>
         </div>
     </div>
     </div>

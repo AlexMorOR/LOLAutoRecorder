@@ -18,15 +18,19 @@ class UploadYoutube:
         self.__thumb_file = r'C:\youtube\lol\thumb\thumb.png'
         self.__file = fr'C:\youtube\Joao\Videos\{video_file_name}'
         self.__title = (
-            f"{match_data['mvp']['champion']} {match_data['player_role']} vs {match_data['loser']} - {match_data['region']} {match_data['mvp']['rank']} Patch {match_data['patch']}")
+            f"{match_data['mvp']['champion']} vs {match_data['loser']} - {match_data['player_role']} - {match_data['mvp']['rank']} - League of Legends")
         self.__description = f"""
     {match_data['mvp']['champion']} {match_data['player_role']} played by {match_data['mvp']['name']} at #{match_data['region']}{match_data['mvp']['rank']}
+
+    Watch how the professionals play, learn and become better!
+    Today we are watching how the {match_data['mvp']['champion']} {match_data['mvp']['rank']} plays in the League of Legends! Don't miss this amazing match.
 
     Data provided by https://leagueofgraphs.com
     """
         self.__category = "20"
-        self.__keywords = [f"{match_data['mvp']['champion']}", "challenger",
-                           "leagueoflegends", "replay", "high kda",
+        self.__keywords = [f"{match_data['mvp']['champion']}", f"{match_data['player_role']}", 
+                           "challenger",
+                           "leagueoflegends", "lol", "guide", "replay", "high kda",
                            f"{match_data['region']}"]
         httplib2.RETRIES = 1
         self.__MAX_RETRIES = 10

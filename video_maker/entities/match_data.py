@@ -7,6 +7,9 @@ class Player:
     kda: str
     name: str
     rank: str
+    items: list[str]
+    spells: list[str]
+    rune: str
 
 
 @dataclass
