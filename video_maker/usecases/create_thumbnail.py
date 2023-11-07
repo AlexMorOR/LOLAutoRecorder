@@ -2,6 +2,7 @@ import os
 from time import sleep
 from entities.data_scrapper import DataScrapper
 from entities.match_data import MatchData
+from PIL import Image
 
 
 class CreateThumbnail:
@@ -32,6 +33,16 @@ class CreateThumbnail:
         sleep(2)
         self.scrapper.driver.set_window_size(1280, 805)
         self.scrapper.driver.save_screenshot(self.__thumb_path)
+        # Open the image file
+        with Image.open(self.__thumb_path) as img:
+            # The new size (width, height)
+            new_size = (1280, 720)
+            
+            # Resize the image
+            resized_img = img.resize(new_size, Image.DEFAULT_STRATEGY)
+
+            # Save the resized image
+            resized_img.save(self.__thumb_path)
         print('Thumbnail criada!')
         self.scrapper.driver.quit()
 
@@ -46,14 +57,15 @@ class CreateThumbnail:
             "K'Sante": "KSante",
             "Kai'Sa": "Kaisa",
             "LeBlanc": "Leblanc",
-            "Wukong": "MonkeyKing"
+            "Wukong": "MonkeyKing",
+            "Tahm Kench": "TahmKench",
+            "Lee Sin": "LeeSin"
         }
         api_name = ""
         if name in premadeWords:
             api_name = premadeWords[name]
         else:
-            champion = name.replace(
-                "'", "").lower().capitalize()
+            champion = ' '.join([word.capitalize() for word in name.replace("'", "").split(" ")])
             champion = champion.replace(
                 " ", "")
             api_name = champion
