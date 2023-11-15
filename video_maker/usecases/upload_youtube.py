@@ -53,7 +53,7 @@ class UploadYoutube:
 
     def upload_video(self): #====================================== UPLOAD VIDEO
         try:
-            self.__initialize_upload()
+            return self.__initialize_upload()
         except HttpError as e:
             print(f"An HTTP error {e.resp.status} occurred:\n{e.content}")
 
@@ -166,10 +166,6 @@ Veriler https://leagueofgraphs.com tarafından sağlanmıştır.
             "keywords": self.__keywords,
             "privacyStatus": self.__VALID_PRIVACY_STATUSES[0],
             "localizations": {
-                "en": {
-                    "title": self.__title_en,
-                    "description": self.__description_en
-                },
                 "ru": {
                     "title": self.__title_ru,
                     "description": self.__description_ru
@@ -248,6 +244,8 @@ Veriler https://leagueofgraphs.com tarafından sağlanmıştır.
                 self.__add_video_to_playlist(youtube, video_id, playlist_id)
             else:
                 print("Failed to find or create playlist.")
+
+        return video_id
 
     def __resumable_upload(self, insert_request):
         response = None

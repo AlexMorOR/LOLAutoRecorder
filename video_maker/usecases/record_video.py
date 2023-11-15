@@ -1,4 +1,5 @@
 import os
+import threading
 import psutil
 from time import sleep
 import subprocess
@@ -6,6 +7,7 @@ import pyautogui
 import pydirectinput
 import requests
 from entities.match_data import MatchData
+from pywinauto import Application
 
 
 class RecordVideo:
@@ -13,6 +15,7 @@ class RecordVideo:
         self.__video_file_dir = r'C:\youtube\Joao\Videos'
         self.__replay_file_dir = r'C:\youtube\lol\replays'
         self.__match_data = match_data
+        requests.packages.urllib3.disable_warnings()
 
     def record(self):
         # self.__show_mouse_position()
@@ -29,6 +32,8 @@ class RecordVideo:
         self.__configure_render()
         sleep(5)
         self.__select_player()
+        self.__open_rune_window()
+        self.__death_camera_control()
         print('Продолжительность записи = ' + str(int(duration / 60)) + ':' + str(int(duration % 60)))
         sleep(duration + 10)
         self.__start_stop_recording(False)
@@ -44,6 +49,7 @@ class RecordVideo:
             ['start', fr'{self.__replay_file_dir}\{file}'], shell=True)
 
     def __select_player(self):
+        self.__game.set_focus()
         if self.__match_data['team1']['result'] == 'Victory':
             pydirectinput.keyDown('f1')
             pydirectinput.keyUp('f1')
@@ -63,6 +69,11 @@ class RecordVideo:
                 keys[int(self.__match_data['player_index']) - 1])
             pydirectinput.keyUp(
                 keys[int(self.__match_data['player_index']) - 1])
+            
+    def __open_rune_window(self):
+        self.__game.set_focus()
+        pydirectinput.keyDown('c')
+        pydirectinput.keyUp('c')
 
     def __start_stop_recording(self, start:bool):
         url = "https://127.0.0.1:2999/replay/recording"
@@ -79,10 +90,14 @@ class RecordVideo:
     def __get_process_id(self) -> int:
         url = "https://127.0.0.1:2999/replay/game"
         response = requests.get(url=url, verify=False).json()
-        return response['processID']
+        processId = response['processID']
+        app = Application().connect(process=processId)
+        self.__game = app.window()
+        return processId
 
     def __kill_process(self, id):
         psutil.Process(id).kill()
+        self.__deth_camera_control_enable = False
 
     def __configure_render(self):
         url = "https://127.0.0.1:2999/replay/render"
@@ -121,6 +136,29 @@ class RecordVideo:
                 sleep(10)
             else:
                 return
+            
+    def __death_camera_control(self):
+        url = "https://127.0.0.1:2999/liveclientdata/playerlist"
+        self.__deth_camera_control_enable = True 
+        def ___death_camera_control_thread():
+            try:
+                isDead = False
+                while(self.__deth_camera_control_enable):
+                    sleep(1)
+                    response = requests.get(url = url, verify=False).json()
+                    newIsDead = next((player['isDead'] for player in response if player['summonerName'] == self.__match_data['mvp']['name']), None)
+                    if(newIsDead != isDead):
+                        isDead = newIsDead
+                        if(isDead):
+                            self.__game.set_focus()
+                            pydirectinput.keyDown('d')
+                            pydirectinput.keyUp('d')
+                        else:
+                            self.__select_player()
+            finally:
+                pass
+
+        threading.Thread(target=___death_camera_control_thread).start()
 
     def get_last_video_file(self):
         self.__select_video_file()
