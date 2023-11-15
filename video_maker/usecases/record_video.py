@@ -155,6 +155,8 @@ class RecordVideo:
                             pydirectinput.keyUp('d')
                         else:
                             self.__select_player()
+            except Exception:
+                pass
             finally:
                 pass
 
